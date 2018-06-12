@@ -9,4 +9,5 @@
 ## 4. プレゼン資料
 **Presentation**ファイルにあります。何か提案等あれば言ってください。
 ## 5. 参考サイト
-Unityマニュアル[](docs.unity3d.com/ja/current/Manual/index.html)
+Unityマニュアル
+[unity](docs.unity3d.com/ja/current/Manual/index.html)
