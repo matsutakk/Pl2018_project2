@@ -8,3 +8,5 @@
 コードは**Source_code**ファイルに、画像は**image**ファイルに入れてください。imageファイルは、Source_codeファイル内にあります。
 ## 4. プレゼン資料
 **Presentation**ファイルにあります。何か提案等あれば言ってください。
+## 5. 参考サイト
+Unityマニュアル：　[](docs.unity3d.com/ja/current/Manual/index.html)
