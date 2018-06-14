@@ -11,45 +11,31 @@ namespace FileOperation
     public class ServerRepository
     {
 
-        private string convertTextCoding(string text)
-        {
-            return text;
-        }
+        //////////////////////////////////////////////////////////////
+        //*-------------------- About Account -----------------*//
+        //////////////////////////////////////////////////////////////
 
-        public string getUserAccount(string userName)
+        public string getAccount(string userName)
         {
-            string file_path = System.IO.Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "UserInfo.txt");
+            string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "UserInfo.txt");
 
-            if (!System.IO.File.Exists(file_path))
+            if (!File.Exists(file_path))
             {
+                createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
+
                 return "getUserAccount: the file doesn't exist";
             }
 
             string file_data = string.Empty;
-            try
-            {
-                using (FileStream fs = new FileStream(file_path,
-                    FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    using (TextReader sr = new StreamReader(fs,
-                        Encoding.GetEncoding("shift-jis")))
-                    {
-                        file_data = sr.ReadToEnd();
 
-                    }
-                }
-            }
-            catch(Exception e){
-                Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
-                Debug.WriteLine("The file could not be read:");
-                Debug.WriteLine(e.Message);
-            }
-            return convertTextCoding(file_data);
+            file_data = readFile(file_path);
+
+            return file_data;
         }
 
-        public void updateUserAccount(string userName, string new_password)
+        public void updateAccount(string userName, string new_password)
         {
-            string file_data = getUserAccount(userName);
+            string file_data = getAccount(userName);
 
             string[] arr = file_data.Split(' ');
 
@@ -59,91 +45,247 @@ namespace FileOperation
 
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             Debug.WriteLine(new_file_data);
-            string file_path = System.IO.Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "UserInfo.txt");
+            string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "UserInfo.txt");
 
             // overwrite
-            StreamWriter sw = new System.IO.StreamWriter(file_path, false);
+            StreamWriter sw = new StreamWriter(file_path, false);
             sw.Write(new_file_data);
             sw.Close();
 
         }
 
+
+        //////////////////////////////////////////////////////////////
+        //*-------------------- About FriendsList -----------------*//
+        //////////////////////////////////////////////////////////////
+
         public string getFriendsList(string userName)
         {
-            string file_path = System.IO.Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "FriendsList.txt");
+            string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "FriendsList.txt");
 
-            if (!System.IO.File.Exists(file_path))
+            if (!File.Exists(file_path))
             {
-                return "getFriendsList : the file doesn't exist";
+                createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
+                Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                Debug.WriteLine(string.Format("getFriendsList : {0} has been created", file_path));
+                return "";
             }
 
             string file_data = string.Empty;
 
-            StreamReader sr = new System.IO.StreamReader(file_path);
+            file_data = readFile(file_path);
 
-            file_data = sr.ReadToEnd();
-
-            return convertTextCoding(file_data);
+            return file_data;
         }
 
-        //TODO:
+
         public void insertFriendList(string userName, string friendName)
         {
+            string file_data = getFriendsList(userName);
 
+            if (!file_data.Contains(friendName))
+            {
+                string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "FriendsList.txt");
+
+                if (!File.Exists(file_path))
+                {
+                    createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
+                    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                    Debug.WriteLine(string.Format("insertFriendsList : {0} has been created", file_path));
+                }
+                StreamWriter sw = new StreamWriter(file_path, true);
+                sw.Write(" " + friendName);
+                sw.Close();
+            }
+            else
+            {
+                Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                Debug.WriteLine(string.Format("insertFriendsList : {0} has already existed", friendName));
+            }
         }
 
+
+        //////////////////////////////////////////////////////////////
+        //*-------------------- About ChatHistory -----------------*//
+        //////////////////////////////////////////////////////////////
 
         public string getChatHistroy(string userName, string userNameToTalk)
         {
-            string file_path = System.IO.Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "ChatHistory", userNameToTalk+".txt");
 
-            if (!System.IO.File.Exists(file_path))
+            // friend to user
+            string file_path_friend_user = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userNameToTalk, "ChatHistory", userName + ".txt");
+
+            if (!File.Exists(file_path_friend_user))
             {
-                return "getChatHistroy : the file doesn't exist";
+                if (getFriendsList(userNameToTalk).Contains(userName))
+                {
+                    createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userNameToTalk, "ChatHistory"), file_path_friend_user);
+                    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                    Debug.WriteLine(string.Format("getChatHistroy (friend to user) : created chat history with {0}", userName));
+                }
+                else
+                {
+                    return string.Format("getChatHistroy (friend to user): {0} is not in {1}'s FriendsList", userName, userNameToTalk);
+                }
+            }
+
+            // user to friend 
+            string file_path_user_friend = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "ChatHistory", userNameToTalk+".txt");
+            if (!File.Exists(file_path_user_friend))
+            {
+                if (getFriendsList(userName).Contains(userNameToTalk))
+                {
+                    createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "ChatHistory"), file_path_user_friend);
+                    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                    Debug.WriteLine(string.Format("getChatHistroy (user to friend) : created chat history with {0}", userNameToTalk));
+                }
+                else
+                {
+                    return string.Format("getChatHistroy (user to friend) : {0} is not in {1}'s FriendsList", userNameToTalk, userName);
+                }
             }
 
             string file_data = string.Empty;
 
-            StreamReader sr = new System.IO.StreamReader(file_path);
-
-            file_data = sr.ReadToEnd();
-
-            return convertTextCoding(file_data);
+            file_data = readFile(file_path_user_friend);
+           
+            return file_data;
         }
 
-        //TODO:
-        public void updateChatHistory(string userName, string userNameToTalk)
+
+        public void updateChatHistory(string userName, string userNameToTalk, string chatContents)
         {
+            // friend to user
+            string file_path_friend_user = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userNameToTalk, "ChatHistory", userName + ".txt");
+
+            if (!File.Exists(file_path_friend_user))
+            {
+                if (getFriendsList(userNameToTalk).Contains(userName))
+                {
+                    createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userNameToTalk, "ChatHistory"), file_path_friend_user);
+                    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                    Debug.WriteLine(string.Format("updateChatHistory (friend to user) : created chat history with {0}", userName));
+                }
+                else
+                {
+                    Debug.WriteLine(string.Format("updateChatHistory (friend to user): {0} is not in {1}'s FriendsList", userName, userNameToTalk));
+                }
+            }
+
+            // user to friend 
+            string file_path_user_friend = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "ChatHistory", userNameToTalk + ".txt");
+            if (!File.Exists(file_path_user_friend))
+            {
+                if (getFriendsList(userName).Contains(userNameToTalk))
+                {
+                    createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "ChatHistory"), file_path_user_friend);
+                    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                    Debug.WriteLine(string.Format("updateChatHistory (user to friend) : created chat history with {0}", userNameToTalk));
+                }
+                else
+                {
+                    Debug.WriteLine(string.Format("updateChatHistory (user to friend) : {0} is not in {1}'s FriendsList", userNameToTalk, userName));
+                }
+            }
+
+            // overwrite
+
+            // user to friend 
+            StreamWriter sw1 = new StreamWriter(file_path_user_friend, false);
+            sw1.Write(chatContents);
+            sw1.Close();
+
+            // friend to user
+            StreamWriter sw2 = new StreamWriter(file_path_friend_user, false);
+            sw2.Write(chatContents);
+            sw2.Close();
 
         }
+
+        //////////////////////////////////////////////////////////////
+        //*-------------------- About Quiz-------------------*////////
+        //////////////////////////////////////////////////////////////
 
         public string getQuiz(string userName)
         {
-            string file_path = System.IO.Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz.txt");
+            string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz.txt");
 
-            if (!System.IO.File.Exists(file_path))
+            if (!File.Exists(file_path))
             {
                 return "getQuiz : the file doesn't exist";
             }
 
             string file_data = string.Empty;
 
-            StreamReader sr = new System.IO.StreamReader(file_path);
+            file_data = readFile(file_path);
 
-            file_data = sr.ReadToEnd();
-
-            return convertTextCoding(file_data);
+            return file_data;
         }
 
+        //////////////////////////////////////////////////////////////
+        //*-------------------- Sub Methods -----------------*////////
+        //////////////////////////////////////////////////////////////
 
-
-        static void Main(string[] args)
+        public void createDirAndFile(string directoryPath, string filePath)
         {
-            ServerRepository sr = new ServerRepository();
+            Directory.CreateDirectory(directoryPath);
+            using (FileStream fs = File.Create(filePath))
+            {
+                if (fs != null)
+                {
+                    fs.Close();
+                }
+            }
+         }
 
-            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
-            Debug.WriteLine(sr.getUserAccount("User1"));
-            sr.updateUserAccount("User1", "sss");
+        public string readFile(string path)
+        {
+            string file_data = "";
+            try
+            {
+                using (FileStream fs = new FileStream(path,
+                    FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (TextReader sr = new StreamReader(fs,
+                        Encoding.GetEncoding("shift-jis")))
+                    {
+                        file_data = sr.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+                Debug.WriteLine("The file could not be read:");
+                Debug.WriteLine(e.Message);
+                file_data = "error";
+            }
+            return file_data;
         }
+
+
+
+        //static void Main(string[] args)
+        //{
+        //    ServerRepository sr = new ServerRepository();
+
+        //    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+
+        //    // test
+        //    //Debug.WriteLine(sr.getAccount("yoshida"));
+        //    //sr.updateAccount("yoshida", "sss");
+        //    //Debug.WriteLine(sr.getAccount("yoshida"));
+
+        //    //Debug.WriteLine(sr.getFriendsList("yoshida"));
+        //    //sr.insertFriendList("yoshida", "kagawa");
+        //    //Debug.WriteLine(sr.getFriendsList("yoshida"));
+
+
+        //    //Debug.WriteLine(sr.getChatHistroy("yoshida", "kagawa"));
+        //    //sr.updateChatHistory("yoshida", "kagawa", "sss");
+        //    //Debug.WriteLine(sr.getChatHistroy("yoshida", "kagawa"));
+        //    //Debug.WriteLine(sr.getChatHistroy("kagawa", "yoshida"));
+
+        //}
     }
 }
