@@ -10,19 +10,17 @@ namespace FileOperation
 {
     public class ServerRepository
     {
-
         //////////////////////////////////////////////////////////////
-        //*-------------------- About Account -----------------*//
+        //*-------------------- About Password -----------------*//
         //////////////////////////////////////////////////////////////
 
-        public string getAccount(string userName)
+        public string getPassword(string userName)
         {
             string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "UserInfo.txt");
 
             if (!File.Exists(file_path))
             {
                 createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
-
                 return "getUserAccount: the file doesn't exist";
             }
 
@@ -33,9 +31,9 @@ namespace FileOperation
             return file_data;
         }
 
-        public void updateAccount(string userName, string new_password)
+        public string updatePassword(string userName, string new_password)
         {
-            string file_data = getAccount(userName);
+            string file_data = getPassword(userName);
 
             string[] arr = file_data.Split(' ');
 
@@ -52,6 +50,7 @@ namespace FileOperation
             sw.Write(new_file_data);
             sw.Close();
 
+            return string.Format("updateAccount : update {0}", file_path);
         }
 
 
@@ -68,7 +67,6 @@ namespace FileOperation
                 createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
                 Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
                 Debug.WriteLine(string.Format("getFriendsList : {0} has been created", file_path));
-                return "";
             }
 
             string file_data = string.Empty;
@@ -79,7 +77,7 @@ namespace FileOperation
         }
 
 
-        public void insertFriendList(string userName, string friendName)
+        public string insertFriendList(string userName, string friendName)
         {
             string file_data = getFriendsList(userName);
 
@@ -96,11 +94,13 @@ namespace FileOperation
                 StreamWriter sw = new StreamWriter(file_path, true);
                 sw.Write(" " + friendName);
                 sw.Close();
+                return string.Format("insertFriendsList : {0} has been inserted in {1}'s FriendsList", friendName, userName);
             }
             else
             {
                 Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
                 Debug.WriteLine(string.Format("insertFriendsList : {0} has already existed", friendName));
+                return string.Format("insertFriendsList : {0} has already existed in {1}'s FriendsList", friendName, userName);
             }
         }
 
@@ -153,7 +153,7 @@ namespace FileOperation
         }
 
 
-        public void updateChatHistory(string userName, string userNameToTalk, string chatContents)
+        public string updateChatHistory(string userName, string userNameToTalk, string chatContents)
         {
             // friend to user
             string file_path_friend_user = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userNameToTalk, "ChatHistory", userName + ".txt");
@@ -169,6 +169,8 @@ namespace FileOperation
                 else
                 {
                     Debug.WriteLine(string.Format("updateChatHistory (friend to user): {0} is not in {1}'s FriendsList", userName, userNameToTalk));
+                    return string.Format("updateChatHistory (friend to user): {0} is not in {1}'s FriendsList", userName, userNameToTalk);
+                   
                 }
             }
 
@@ -185,6 +187,7 @@ namespace FileOperation
                 else
                 {
                     Debug.WriteLine(string.Format("updateChatHistory (user to friend) : {0} is not in {1}'s FriendsList", userNameToTalk, userName));
+                    return string.Format("updateChatHistory (user to friend) : {0} is not in {1}'s FriendsList", userNameToTalk, userName);
                 }
             }
 
@@ -199,6 +202,8 @@ namespace FileOperation
             StreamWriter sw2 = new StreamWriter(file_path_friend_user, false);
             sw2.Write(chatContents);
             sw2.Close();
+
+            return string.Format("updateChatHistory : updated {0} \n and {1}", file_path_user_friend, file_path_friend_user);
 
         }
 
