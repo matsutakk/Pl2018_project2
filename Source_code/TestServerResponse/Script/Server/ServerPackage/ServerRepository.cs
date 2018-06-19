@@ -233,10 +233,9 @@ namespace ServerPackage
         //*-------------------- About Quiz-------------------*////////
         //////////////////////////////////////////////////////////////
 
-        public string getQuiz(string userName)
+        public string getQuiz(string userName, string num)
         {
-            //string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "Assets","UsersData", userName, "Quiz.txt");
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz", string.Format("Quiz{0}.txt", num)});
 
             if (!File.Exists(file_path))
             {
@@ -248,6 +247,88 @@ namespace ServerPackage
             file_data = readFile(file_path);
 
             return file_data;
+        }
+
+        public string createQuiz(string userName, string quizContents)
+        {
+
+            string[] contents_splitter = { "__" };
+
+            string[] quiz_array = quizContents.Split(contents_splitter, StringSplitOptions.None);
+
+            if (quiz_array.Length != 4)
+            {
+                return string.Format("createQuiz : INVALID REQUEST : Request is not according to the protocol");
+            }
+
+            string[] subFolders = Directory.GetFiles(string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz"}), "*.txt", SearchOption.AllDirectories);
+
+            Debug.Log(subFolders.Length);
+
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz", string.Format("Quiz{0}.txt", (int)subFolders.Length + 1)});
+
+            if (File.Exists(file_path))
+            {
+                return "createQuiz : the file has already existed";
+            }
+            else
+            {
+                createDirAndFile(string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz" }), file_path);
+            }
+
+            
+            string new_file_data = string.Join(" ", quiz_array);
+
+            Debug.Log(new_file_data);
+
+            // overwrite
+            StreamWriter sw = new StreamWriter(file_path, false);
+            sw.Write(new_file_data);
+            sw.Close();
+
+            return string.Format("createQuiz : create {0}", file_path);
+        }
+
+        public string updateQuiz(string userName, string quizContents, string num)
+        {
+            string[] contents_splitter = { "__" };
+
+            string[] quiz_array = quizContents.Split(contents_splitter, StringSplitOptions.None);
+
+            if (quiz_array.Length != 4)
+            {
+                return string.Format("updateQuiz : INVALID REQUEST : Request is not according to the protocol");
+            }
+
+
+            string file_data = getQuiz(userName, num);
+
+            string[] arr = file_data.Split(' ');
+            if (arr.Length != 4)
+            {
+                return string.Format("updateQuiz : Quiz do not match the following format : {QUESTION ANSWER1 ANSWER2 ANSWER3}");
+            }
+
+            for (int i = 0; i < (int)quiz_array.Length; i++)
+            {
+                if (quiz_array[i] != "NOCHANGE")
+                {
+                    arr[i] = quiz_array[i];
+                }
+            }
+
+            string new_file_data = string.Join(" ", arr);
+
+            Debug.Log(new_file_data);
+            //string file_path = new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz", string.Format("Quiz{0}.txt", num) }.Aggregate(Path.Combine);
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz", string.Format("Quiz{0}.txt", num)});
+
+            // overwrite
+            StreamWriter sw = new StreamWriter(file_path, false);
+            sw.Write(new_file_data);
+            sw.Close();
+
+            return string.Format("updateQuiz : update {0}", file_path);
         }
 
         //////////////////////////////////////////////////////////////

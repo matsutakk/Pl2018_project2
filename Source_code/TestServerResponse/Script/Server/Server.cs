@@ -199,7 +199,7 @@ public class ServerClient
 
     public ServerClient(TcpClient clientSocket)
     {
-        clientName = "kagawa";
+        clientName = "GUEST";
         tcp = clientSocket;
     }
 

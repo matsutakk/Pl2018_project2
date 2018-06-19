@@ -51,8 +51,18 @@ namespace ServerPackage
                         break;
 
                     case "GET_QUIZ":
-                        response = serverRepository.getQuiz(clientName);
+                        response = serverRepository.getQuiz(clientName, request_array[1]);
                         break;
+
+                    case "UPDATE_QUIZ":
+                        response = serverRepository.updateQuiz(clientName, request_array[1], request_array[2]);
+                        break;
+
+                    case "CREATE_QUIZ":
+                        response = serverRepository.createQuiz(clientName, request_array[1]);
+                        break;
+
+
                 }
                 return response;
             }
@@ -104,7 +114,19 @@ namespace ServerPackage
                     break;
 
                 case "GET_QUIZ":
-                    if (request_array.Length == 1)
+                    if (request_array.Length == 2)
+                        comment = "OK";
+                    else comment = "INVALID REQUEST : Request is not according to the protocol";
+                    break;
+
+                case "UPDATE_QUIZ":
+                    if (request_array.Length == 3)
+                        comment = "OK";
+                    else comment = "INVALID REQUEST : Request is not according to the protocol";
+                    break;
+
+                case "CREATE_QUIZ":
+                    if (request_array.Length == 2)
                         comment = "OK";
                     else comment = "INVALID REQUEST : Request is not according to the protocol";
                     break;
