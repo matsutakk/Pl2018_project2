@@ -51,18 +51,8 @@ namespace FileOperation
                         break;
 
                     case "GET_QUIZ":
-                        response = serverRepository.getQuiz(clientName, request_array[1]);
+                        response = serverRepository.getQuiz(clientName);
                         break;
-
-                    case "UPDATE_QUIZ":
-                        response = serverRepository.updateQuiz(clientName, request_array[1], request_array[2]);
-                        break;
-
-                    case "CREATE_QUIZ":
-                        response = serverRepository.createQuiz(clientName, request_array[1]);
-                        break;
-
-
                 }
                 return response;
             }
@@ -114,19 +104,7 @@ namespace FileOperation
                     break;
 
                 case "GET_QUIZ":
-                    if (request_array.Length == 2)
-                        comment = "OK";
-                    else comment = "INVALID REQUEST : Request is not according to the protocol";
-                    break;
-
-                case "UPDATE_QUIZ":
-                    if (request_array.Length == 3)
-                        comment = "OK";
-                    else comment = "INVALID REQUEST : Request is not according to the protocol";
-                    break;
-
-                case "CREATE_QUIZ":
-                    if (request_array.Length == 2)
+                    if (request_array.Length == 1)
                         comment = "OK";
                     else comment = "INVALID REQUEST : Request is not according to the protocol";
                     break;
@@ -145,10 +123,9 @@ namespace FileOperation
             ServerService ss = new ServerService();
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            //Debug.WriteLine(ss.requestSolver("UPDATE_CHAT_HISTORY%%kagawa%%ssssss", "yoshida"));
-            Debug.WriteLine(ss.requestSolver("GET_QUIZ%%3", "kagawa"));
-            ss.requestSolver("UPDATE_QUIZ%%3%%kk__kll__NOCHANGE__dss", "kagawa");
-            Debug.WriteLine(ss.requestSolver("GET_QUIZ%%3", "kagawa"));
+            Debug.WriteLine(ss.requestSolver("UPDATE_CHAT_HISTORY%%yoshida%%ssssss", "agawa"));
+            Debug.WriteLine(ss.requestSolver("GET_CHAT_HISTORY%%yoshida%%eeeee", "kagawa"));
+
             // test
 
         }
