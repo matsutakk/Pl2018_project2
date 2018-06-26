@@ -12,7 +12,7 @@
 ### 友達リスト関連
 
   1. 友達リストの取得
-     - サーバは 文字列 "GET_FRIENDSLIST"を受信すると, listを送信します.
+     - サーバは 文字列 "GET_FRIENDSLIST"を受信すると, "FriendList "+listを送信します.
 
   2. 友達リストへの友達の追加
      - サーバは 文字列 "INSERT_FRIENDSLIST%%追加する友達の名前"を受信すると, 友達を追加します.
