@@ -35,7 +35,7 @@ namespace FileOperation
                         break;
 
                     case "GET_FRIENDSLIST":
-                        response = "ChatRecord " + serverRepository.getFriendsList(clientName);
+                        response = "FriendList " + serverRepository.getFriendsList(clientName);
                         break;
 
                     case "INSERT_FRIENDSLIST":
@@ -43,7 +43,7 @@ namespace FileOperation
                         break;
 
                     case "GET_CHAT_HISTORY":
-                        response = "UserInfo " + serverRepository.getChatHistroy(clientName, request_array[1]);
+                        response = "ChatRecord " + serverRepository.getChatHistroy(clientName, request_array[1]);
                         break;
 
                     case "UPDATE_CHAT_HISTORY":
