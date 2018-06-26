@@ -27,7 +27,7 @@ namespace FileOperation
                 switch (request_array[0])
                 {
                     case "GET_PASSWORD":
-                        response = serverRepository.getPassword(clientName);
+                        response = "UserInfo " + serverRepository.getPassword(clientName);
                         break;
 
                     case "UPDATE_PASSWORD":
@@ -35,7 +35,7 @@ namespace FileOperation
                         break;
 
                     case "GET_FRIENDSLIST":
-                        response = serverRepository.getFriendsList(clientName);
+                        response = "ChatRecord " + serverRepository.getFriendsList(clientName);
                         break;
 
                     case "INSERT_FRIENDSLIST":
@@ -43,7 +43,7 @@ namespace FileOperation
                         break;
 
                     case "GET_CHAT_HISTORY":
-                        response = serverRepository.getChatHistroy(clientName, request_array[1]);
+                        response = "UserInfo " + serverRepository.getChatHistroy(clientName, request_array[1]);
                         break;
 
                     case "UPDATE_CHAT_HISTORY":
@@ -51,8 +51,18 @@ namespace FileOperation
                         break;
 
                     case "GET_QUIZ":
-                        response = serverRepository.getQuiz(clientName);
+                        //response = serverRepository.getQuiz(clientName, request_array[1]);
+                        response = "Quiz " + serverRepository.getQuiz(request_array[1]);
                         break;
+
+                    case "CREATE_QUIZ":
+                        response = serverRepository.createQuiz(clientName, request_array[1]);
+                        break;
+
+                    case "UPDATE_QUIZ":
+                        response = serverRepository.updateQuiz(clientName, request_array[1]);
+                        break;
+                        
                 }
                 return response;
             }
@@ -104,7 +114,19 @@ namespace FileOperation
                     break;
 
                 case "GET_QUIZ":
-                    if (request_array.Length == 1)
+                    if (request_array.Length == 2)
+                        comment = "OK";
+                    else comment = "INVALID REQUEST : Request is not according to the protocol";
+                    break;
+
+                case "UPDATE_QUIZ":
+                    if (request_array.Length == 2)
+                        comment = "OK";
+                    else comment = "INVALID REQUEST : Request is not according to the protocol";
+                    break;
+
+                case "CREATE_QUIZ":
+                    if (request_array.Length == 2)
                         comment = "OK";
                     else comment = "INVALID REQUEST : Request is not according to the protocol";
                     break;
@@ -123,11 +145,13 @@ namespace FileOperation
             ServerService ss = new ServerService();
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            Debug.WriteLine(ss.requestSolver("UPDATE_CHAT_HISTORY%%yoshida%%ssssss", "agawa"));
-            Debug.WriteLine(ss.requestSolver("GET_CHAT_HISTORY%%yoshida%%eeeee", "kagawa"));
-
+            Debug.WriteLine(ss.requestSolver("UPDATE_CHAT_HISTORY%%kagawa%%saasss", "yoshida"));
+            Debug.WriteLine(ss.requestSolver("UPDATE_CHAT_HISTORY%%yoshida%%ddssss", "kagawa"));
+            Debug.WriteLine(ss.requestSolver("GET_QUIZ%%kagawa", "yoshida"));
+            ss.requestSolver("UPDATE_QUIZ%%kk__kll__NOCHANGE__dss", "kagawa");
+            Debug.WriteLine(ss.requestSolver("GET_QUIZ%%yoshida", "kagawa"));
             // test
-
         }
+
     }
 }

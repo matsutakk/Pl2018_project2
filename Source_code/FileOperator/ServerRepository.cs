@@ -21,7 +21,7 @@ namespace FileOperation
             if (!File.Exists(file_path))
             {
                 createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
-                return "getUserAccount: the file doesn't exist";
+                return "getPassword : the file doesn't exist";
             }
 
             string file_data = string.Empty;
@@ -191,16 +191,16 @@ namespace FileOperation
                 }
             }
 
-            // overwrite
+ 
 
             // user to friend 
-            StreamWriter sw1 = new StreamWriter(file_path_user_friend, false);
-            sw1.Write(chatContents);
+            StreamWriter sw1 = new StreamWriter(file_path_user_friend, true);
+            sw1.Write(userName+"&&"+chatContents+"::");
             sw1.Close();
 
             // friend to user
-            StreamWriter sw2 = new StreamWriter(file_path_friend_user, false);
-            sw2.Write(chatContents);
+            StreamWriter sw2 = new StreamWriter(file_path_friend_user, true);
+            sw2.Write(userName + "&&" + chatContents + "::");
             sw2.Close();
 
             return string.Format("updateChatHistory : updated {0} \n and {1}", file_path_user_friend, file_path_friend_user);
@@ -213,7 +213,8 @@ namespace FileOperation
 
         public string getQuiz(string userName)
         {
-            string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz.txt");
+            //string file_path = new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz", string.Format("Quiz{0}.txt", num) }.Aggregate(Path.Combine);
+            string file_path = new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz", string.Format("Quiz.txt") }.Aggregate(Path.Combine);
 
             if (!File.Exists(file_path))
             {
@@ -226,6 +227,70 @@ namespace FileOperation
 
             return file_data;
         }
+
+        public string createQuiz(string userName, string quizContents)
+        {
+
+            //string[] subFolders = Directory.GetFiles(new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz"}.Aggregate(Path.Combine), "*", SearchOption.AllDirectories);
+            string old_data = getQuiz(userName);
+            string file_path = new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz", "Quiz.txt" }.Aggregate(Path.Combine);
+
+            if (File.Exists(file_path))
+            {
+                return "createQuiz : the file has already existed";
+            }
+            else
+            {
+                createDirAndFile(new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz" }.Aggregate(Path.Combine), file_path);
+            }
+
+            string[] contents_splitter = {"__"};
+            string[] quiz_array = quizContents.Split(contents_splitter, StringSplitOptions.None);
+
+            if(quiz_array.Length != 4)
+            {
+                return string.Format("createQuiz : INVALID REQUEST : Request is not according to the protocol");
+            }
+
+            string new_file_data = string.Join("__", quiz_array);
+
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            Debug.WriteLine(old_data+"&&"+new_file_data);
+
+            // overwrite
+            StreamWriter sw = new StreamWriter(file_path, false);
+            sw.Write(new_file_data);
+            sw.Close();
+
+            return string.Format("createQuiz : create {0}", file_path);
+        }
+
+        public string updateQuiz(string userName, string quizContents)
+        {
+            
+            //string[] contents_splitter = {"__"};
+            //string[] quiz_array = quizContents.Split(contents_splitter, StringSplitOptions.None);
+
+            //if (quiz_array.Length != 4)
+            //{
+            //    return string.Format("updateQuiz : INVALID REQUEST : Request is not according to the protocol");
+            //}
+
+            string new_file_data = quizContents;
+
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            Debug.WriteLine(new_file_data);
+            //string file_path = new[] {Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz", string.Format("Quiz{0}.txt", num)}.Aggregate(Path.Combine);
+            string file_path = new[] { Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName, "Quiz", string.Format("Quiz.txt") }.Aggregate(Path.Combine);
+
+            // overwrite
+            StreamWriter sw = new StreamWriter(file_path, true);
+            sw.Write(new_file_data);
+            sw.Close();
+
+            return string.Format("updateQuiz : update {0}", file_path);
+        }
+
 
         //////////////////////////////////////////////////////////////
         //*-------------------- Sub Methods -----------------*////////
@@ -248,15 +313,19 @@ namespace FileOperation
             string file_data = "";
             try
             {
-                using (FileStream fs = new FileStream(path,
-                    FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                byte[] loadData;
+
+                using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    using (TextReader sr = new StreamReader(fs,
-                        Encoding.GetEncoding("shift-jis")))
-                    {
-                        file_data = sr.ReadToEnd();
-                    }
+                    loadData = new byte[fileStream.Length];
+                    fileStream.Read(loadData, 0, loadData.Length);
                 }
+
+                Encoding sjisEnc = Encoding.GetEncoding("Shift_JIS");
+                string sjisstr = sjisEnc.GetString(loadData);
+                byte[] bytesData = System.Text.Encoding.UTF8.GetBytes(sjisstr);
+                Encoding utf8Enc = Encoding.GetEncoding("UTF-8");
+                file_data = utf8Enc.GetString(bytesData);
             }
             catch (Exception e)
             {
@@ -277,6 +346,13 @@ namespace FileOperation
         //    Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
         //    // test
+        //    Debug.WriteLine(sr.getQuiz("kagawa"));
+        //    sr.createQuiz("kagawa", "sss__sss__a__b");
+        //    sr.updateQuiz("kagawa", "sss__sss__a__b");
+        //    Debug.WriteLine(sr.getQuiz("kagawa"));
+
+        //    //Debug.WriteLine(sr.getAccount("yoshida"));
+
         //    //Debug.WriteLine(sr.getAccount("yoshida"));
         //    //sr.updateAccount("yoshida", "sss");
         //    //Debug.WriteLine(sr.getAccount("yoshida"));
