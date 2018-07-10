@@ -235,8 +235,9 @@ namespace ServerPackage
 
         public string getQuiz(string userName)
         {
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz", "Quiz.txt"});
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
 
+            Debug.Log("getQuiz "+file_path);
             if (!File.Exists(file_path))
             {
                 return "getQuiz : the file doesn't exist";
@@ -263,7 +264,7 @@ namespace ServerPackage
 
             //string[] subFolders = Directory.GetFiles(string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz"}), "*.txt", SearchOption.AllDirectories);
 
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz", "Quiz.txt"});
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
 
             if (File.Exists(file_path))
             {
@@ -271,7 +272,7 @@ namespace ServerPackage
             }
             else
             {
-                createDirAndFile(string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz" }), file_path);
+                createDirAndFile(string.Join("/", new[] { Application.dataPath, "UsersData", userName}), file_path);
             }
 
             
@@ -292,7 +293,7 @@ namespace ServerPackage
             string new_file_data = quizContents;
 
             Debug.Log(new_file_data);
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz", "Quiz.txt"});
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
 
             // overwrite
             StreamWriter sw = new StreamWriter(file_path, false);
