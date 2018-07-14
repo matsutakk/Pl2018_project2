@@ -3,7 +3,11 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
+using System.Collections;
+using UnityEngine;
+using System.Net;
+using System.Net.Sockets;
+//using System.Diagnostics;
 //using System.Threading.Tasks;
 
 namespace ServerPackage
@@ -48,6 +52,8 @@ namespace ServerPackage
 
                     case "UPDATE_CHAT_HISTORY":
                         response = serverRepository.updateChatHistory(clientName, request_array[1], request_array[2]);
+                        response = response + request_array[1];
+                        Debug.Log("response : " + response);
                         break;
 
                     case "GET_QUIZ":

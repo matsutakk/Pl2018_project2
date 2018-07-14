@@ -225,8 +225,9 @@ namespace ServerPackage
             sw2.Write(userName + "&&" + chatContents + "::");
             sw2.Close();
 
-            return string.Format("updateChatHistory : updated {0} \n and {1}", file_path_user_friend, file_path_friend_user);
-
+            Debug.Log("updateChatHistroy::success");
+            //return string.Format("updateChatHistory : updated {0} \n and {1}", file_path_user_friend, file_path_friend_user);
+            return ("updateChatHistroy::success&");
         }
 
         //////////////////////////////////////////////////////////////

@@ -30,12 +30,10 @@ public class Server : MonoBehaviour
         {
             server = new TcpListener(IPAddress.Any, port);
             server.Start();
-
             StartListening();
             serverStarted = true;
             Debug.Log("Server has been started on port: " + port.ToString());
 
-            Debug.Log("current dir: " + Directory.GetCurrentDirectory());
         }
         catch (Exception e)
         {
@@ -131,7 +129,10 @@ public class Server : MonoBehaviour
 
         // Send a message to everyone, say someone has connected
         //Broadcast(clients[clients.Count - 1].clientName + " has connected", clients);
-        Broadcast("%NAME", new List<ServerClient>() { clients[clients.Count - 1] });
+        //Broadcast("%NAME", new List<ServerClient>() { clients[clients.Count - 1] });
+
+        CastToClient("##NAME##", clients[clients.Count - 1]);
+        //CastToClient(clients[clients.Count - 1].clientName, clients[clients.Count - 1]);
 
     }
 
@@ -154,17 +155,58 @@ public class Server : MonoBehaviour
 
     }
 
-    //TODO input data
     private void OnIncomingData(ServerClient c, string data)
     {
         string response = string.Empty;
+        Debug.Log("server accepted : " + data);
+        if (data.Contains("##NAME|"))
+        {
+            c.clientName = data.Split('|')[1];
+            CastToClient(c.clientName + " has connected", c);
+            return;
+        }
 
         ServerService serverService = new ServerService();
-
         response = serverService.requestSolver(data, c.clientName);
 
-        Debug.Log(c.clientName + " has sent the followinng message : " + data);
-     }
+        Debug.Log("server response : " + response);
+        CastToClient(response, c);
+
+        if (response.Contains("updateChatHistroy::success"))
+        {
+            string nameChattingWith = response.Split('&')[1];
+            string updater = c.clientName;
+
+            data = "GET_CHAT_HISTORY%%" + nameChattingWith;
+            Debug.Log("data : " + data);
+            string diff_response = serverService.requestSolver(data, c.clientName);
+
+            // Cast To  Updater and Whom Chatting with   
+            foreach (ServerClient client in clients)
+            {
+                if (client.clientName == updater || client.clientName == nameChattingWith)
+                {
+                    CastToClient(diff_response, client);
+                }
+            }
+        }
+    }
+
+    private void CastToClient(string data, ServerClient client)
+    {
+        try
+        {
+            NetworkStream netStream = client.tcp.GetStream();
+            StreamWriter writer = new StreamWriter(netStream);
+            Debug.Log("Cast to clinet :" + data);
+            writer.WriteLine(data);
+            writer.Flush();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Write error: " + e.Message + " to client " + client.clientName);
+        }
+    }
 
 }
 
@@ -175,7 +217,7 @@ public class ServerClient
 
     public ServerClient(TcpClient clientSocket)
     {
-        clientName = "Guest";
+        clientName = "GUEST";
         tcp = clientSocket;
     }
 
