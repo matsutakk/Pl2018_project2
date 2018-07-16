@@ -170,7 +170,7 @@ public class Server : MonoBehaviour
         response = serverService.requestSolver(data, c.clientName);
 
         Debug.Log("server response : " + response);
-        CastToClient(response, c);
+        //CastToClient(response, c);
 
         if (response.Contains("updateChatHistroy::success"))
         {
