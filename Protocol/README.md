@@ -4,7 +4,7 @@
 
 ### パスワード関連
   1. パスワードの取得
-     - サーバは 文字列 "GET_PASSWORD"を受信すると, "UserInfo "+userinfo (UserInfo&&username&&password)を送信します.
+     - サーバは 文字列 "GET_PASSWORD"を受信すると, "UserInfo "+userinfo を送信します.
 
   2. パスワードの更新
      - サーバは 文字列 "UPDATE_PASSWORD%%変更後のパスワード"を受信すると, パスワードを更新します.
