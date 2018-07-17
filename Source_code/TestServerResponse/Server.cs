@@ -183,13 +183,18 @@ public class Server : MonoBehaviour
             data = "GET_CHAT_HISTORY%%" + nameChattingWith;
             Debug.Log("data : " + data);
             string diff_response = serverService.requestSolver(data, c.clientName);
+            //Debug.Log("diff_res : " + diff_response);
 
             // Cast To  Updater and Whom Chatting with   
             foreach (ServerClient client in clients)
             {
-                if (client.clientName == updater || client.clientName == nameChattingWith)
+                if (client.clientName == updater)
                 {
                     CastToClient(diff_response, client);
+                }
+                else if (client.clientName == nameChattingWith)
+                {
+                    CastToClient(diff_response.Replace("ChatRecord", "ChatRecordFromTheOther"), client);
                 }
             }
         }
