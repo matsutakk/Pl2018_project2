@@ -17,7 +17,7 @@ public class Server : MonoBehaviour
     private List<ServerClient> clients; // connected List
     private List<ServerClient> disconnectedList;
 
-    public int port = 6321;
+    public int port = 6543;
     private TcpListener server;
     private bool serverStarted;
 
@@ -28,7 +28,11 @@ public class Server : MonoBehaviour
 
         try
         {
-            server = new TcpListener(IPAddress.Any, port);
+            //IPAddress ip = IPAddress.Any;
+            IPAddress ip = IPAddress.Parse("192.168.11.6");
+            server = new TcpListener(ip, port);
+            Debug.Log("IP: " + ip);
+
             server.Start();
             StartListening();
             serverStarted = true;
@@ -49,39 +53,46 @@ public class Server : MonoBehaviour
 
         try
         {
-            foreach (ServerClient c in clients)
+
+            if (clients.Count > 0)
             {
+                foreach (ServerClient c in clients)
+                {
 
-                // Is the client still connected ?
-                if (!IsConnected(c.tcp))
-                {
-                    c.tcp.Close();
-                    disconnectedList.Add(c);
-                    continue;
-                }
-                // Check for message from the client
-                else
-                {
-                    NetworkStream s = c.tcp.GetStream();
-                    if (s.DataAvailable)
+                    // Is the client still connected ?
+                    if (!IsConnected(c.tcp))
                     {
-                        StreamReader reader = new StreamReader(s, true);
-                        string data = reader.ReadLine();
-
-                        if (data != null)
+                        c.tcp.Close();
+                        Debug.Log(c.clientName+" has disconnected");
+                        clients.Remove(c);
+                        //disconnectedList.Add(c);
+                        //continue;
+                        break;
+                    }
+                    // Check for message from the client
+                    else
+                    {
+                        NetworkStream s = c.tcp.GetStream();
+                        if (s.DataAvailable)
                         {
-                            OnIncomingData(c, data);
+                            StreamReader reader = new StreamReader(s, true);
+                            string data = reader.ReadLine();
+
+                            if (data != null)
+                            {
+                                OnIncomingData(c, data);
+                            }
                         }
                     }
-                }
 
-                for (int i = 0; i < (disconnectedList.Count - 1); i++)
-                {
-                    Broadcast(disconnectedList[i].clientName + " has disconnected", clients);
-                    clients.Remove(disconnectedList[i]);
-                    disconnectedList.RemoveAt(i);
-                }
+                    //for (int i = 0; i < (disconnectedList.Count - 1); i++)
+                    //{
+                    //    //Broadcast(disconnectedList[i].clientName + " has disconnected", clients);
+                    //    clients.Remove(disconnectedList[i]);
+                    //    disconnectedList.RemoveAt(i);
+                    //}
 
+                }
             }
         }
         catch (InvalidOperationException e)
