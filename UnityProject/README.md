@@ -12,3 +12,7 @@
 - 実行方法はpart2の27:30~を参照してください
 - Ctrl+B(またはFile->BuildSettingsでBuild)でUnityProjectのBuildができます
   - 実行ファイルはUnityProjectの下に保存してください
+
+## pl2 : 画面遷移およびUIの確認ができます
+
+画面遷移ができます。
