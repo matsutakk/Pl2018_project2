@@ -8,7 +8,7 @@ using System.Text;
 //using System.Diagnostics;
 
 namespace ServerPackage
-{  
+{
 
     public class ServerRepository
     {
@@ -19,12 +19,12 @@ namespace ServerPackage
         public string getPassword(string userName)
         {
             //string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "Assets", "UsersData", userName, "UserInfo.txt");
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "UserInfo.txt" }); 
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "UserInfo.txt" });
 
             if (!File.Exists(file_path))
             {
                 //createDirAndFile(Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "UsersData", userName), file_path);
-                createDirAndFile( string.Join("/", new[] { Application.dataPath, "UsersData", userName }), file_path);
+                createDirAndFile(string.Join("/", new[] { Application.dataPath, "UsersData", userName }), file_path);
 
                 return "getPassword : the file doesn't exist";
             }
@@ -46,7 +46,7 @@ namespace ServerPackage
 
             string new_file_data = string.Join(" ", arr);
 
-            Debug.Log(new_file_data);
+            //Debug.Log(new_file_data);
 
             //string file_path = Path.Combine(Path.GetDirectoryName(Directory.GetCurrentDirectory()), "Assets", "UsersData", userName, "UserInfo.txt");
             string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "UserInfo.txt" });
@@ -119,7 +119,7 @@ namespace ServerPackage
         //*-------------------- About ChatHistory -----------------*//
         //////////////////////////////////////////////////////////////
 
-        public string getChatHistroy(string userName, string userNameToTalk)
+        public string getChatHistory(string userName, string userNameToTalk)
         {
 
             // friend to user
@@ -225,7 +225,7 @@ namespace ServerPackage
             sw2.Write(userName + "&&" + chatContents + "::");
             sw2.Close();
 
-            Debug.Log("updateChatHistroy::success");
+            //Debug.Log("updateChatHistroy::success");
             //return string.Format("updateChatHistory : updated {0} \n and {1}", file_path_user_friend, file_path_friend_user);
             return ("updateChatHistroy::success&");
         }
@@ -236,9 +236,9 @@ namespace ServerPackage
 
         public string getQuiz(string userName)
         {
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt" });
 
-            Debug.Log("getQuiz "+file_path);
+            //Debug.Log("getQuiz " + file_path);
             if (!File.Exists(file_path))
             {
                 return "getQuiz : the file doesn't exist";
@@ -251,6 +251,8 @@ namespace ServerPackage
             return file_data;
         }
 
+
+        // TODO : ユーザを指定
         public string createQuiz(string userName, string quizContents)
         {
 
@@ -258,14 +260,15 @@ namespace ServerPackage
 
             string[] quiz_array = quizContents.Split(contents_splitter, StringSplitOptions.None);
 
-            if (quiz_array.Length != 4)
+            //
+            if (quiz_array.Length != 5)
             {
                 return string.Format("createQuiz : INVALID REQUEST : Request is not according to the protocol");
             }
 
             //string[] subFolders = Directory.GetFiles(string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz"}), "*.txt", SearchOption.AllDirectories);
 
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt" });
 
             if (File.Exists(file_path))
             {
@@ -273,13 +276,13 @@ namespace ServerPackage
             }
             else
             {
-                createDirAndFile(string.Join("/", new[] { Application.dataPath, "UsersData", userName}), file_path);
+                createDirAndFile(string.Join("/", new[] { Application.dataPath, "UsersData", userName }), file_path);
             }
 
-            
+
             string new_file_data = string.Join("__", quiz_array);
 
-            Debug.Log(new_file_data);
+            //Debug.Log(new_file_data);
 
             // overwrite
             StreamWriter sw = new StreamWriter(file_path, false);
@@ -289,12 +292,13 @@ namespace ServerPackage
             return string.Format("createQuiz : create {0}", file_path);
         }
 
+
         public string updateQuiz(string userName, string quizContents)
         {
             string new_file_data = quizContents;
 
-            Debug.Log(new_file_data);
-            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt"});
+            //Debug.Log(new_file_data);
+            string file_path = string.Join("/", new[] { Application.dataPath, "UsersData", userName, "Quiz.txt" });
 
             // overwrite
             StreamWriter sw = new StreamWriter(file_path, false);
@@ -331,11 +335,11 @@ namespace ServerPackage
                     file_data = sr.ReadToEnd();
                 }
 
-                Debug.Log("readFile : "+file_data);
+               // Debug.Log("readFile : " + file_data);
             }
             catch (Exception e)
             {
-               
+
                 Debug.Log("The file could not be read:");
                 Debug.Log(e.Message);
                 file_data = "error";

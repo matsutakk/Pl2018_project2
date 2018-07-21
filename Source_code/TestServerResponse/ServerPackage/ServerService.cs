@@ -47,13 +47,13 @@ namespace ServerPackage
                         break;
 
                     case "GET_CHAT_HISTORY":
-                        response = "ChatRecord " + serverRepository.getChatHistroy(clientName, request_array[1]);
+                        response = "ChatRecord " + serverRepository.getChatHistory(clientName, request_array[1]);
                         break;
 
                     case "UPDATE_CHAT_HISTORY":
                         response = serverRepository.updateChatHistory(clientName, request_array[1], request_array[2]);
                         response = response + request_array[1];
-                        Debug.Log("response : " + response);
+                        //Debug.Log("response : " + response);
                         break;
 
                     case "GET_QUIZ":
@@ -65,7 +65,7 @@ namespace ServerPackage
                         break;
 
                     case "CREATE_QUIZ":
-                        response = serverRepository.createQuiz(clientName, request_array[1]);
+                        response = serverRepository.createQuiz(request_array[1], request_array[2]);
                         break;
 
 
@@ -132,7 +132,7 @@ namespace ServerPackage
                     break;
 
                 case "CREATE_QUIZ":
-                    if (request_array.Length == 2)
+                    if (request_array.Length == 3)
                         comment = "OK";
                     else comment = "INVALID REQUEST : Request is not according to the protocol";
                     break;
