@@ -66,6 +66,8 @@ namespace ServerPackage
 
                     case "CREATE_QUIZ":
                         response = serverRepository.createQuiz(request_array[1], request_array[2]);
+                        //Debug.Log("request array[1] : "+ request_array[1]);
+                        //Debug.Log("request array[2] : " + request_array[2]);
                         break;
 
 

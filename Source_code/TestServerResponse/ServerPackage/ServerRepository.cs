@@ -256,11 +256,11 @@ namespace ServerPackage
         public string createQuiz(string userName, string quizContents)
         {
 
-            string[] contents_splitter = { "__" };
+            string[] contents_splitter = { " " };
 
             string[] quiz_array = quizContents.Split(contents_splitter, StringSplitOptions.None);
 
-            //
+                                 
             if (quiz_array.Length != 5)
             {
                 return string.Format("createQuiz : INVALID REQUEST : Request is not according to the protocol");
@@ -272,7 +272,8 @@ namespace ServerPackage
 
             if (File.Exists(file_path))
             {
-                return "createQuiz : the file has already existed";
+                Debug.Log("createQuiz : the file has already existed");
+            //return "createQuiz : the file has already existed";
             }
             else
             {
@@ -280,12 +281,12 @@ namespace ServerPackage
             }
 
 
-            string new_file_data = string.Join("__", quiz_array);
+            string new_file_data = " " + string.Join(" ", quiz_array);
 
             //Debug.Log(new_file_data);
 
             // overwrite
-            StreamWriter sw = new StreamWriter(file_path, false);
+            StreamWriter sw = new StreamWriter(file_path, true);
             sw.Write(new_file_data);
             sw.Close();
 
@@ -335,7 +336,7 @@ namespace ServerPackage
                     file_data = sr.ReadToEnd();
                 }
 
-               // Debug.Log("readFile : " + file_data);
+                // Debug.Log("readFile : " + file_data);
             }
             catch (Exception e)
             {
@@ -349,3 +350,4 @@ namespace ServerPackage
 
     }
 }
+    
